@@ -47,11 +47,11 @@ The output of each step is indicated in parentheses.
 
 Other steps may be added at a later time:
 	
-* piPipes
+* piPipes https://github.com/bowhan/piPipes
 
-* Sports
+* Sports https://github.com/junchaoshi/sports1.0
 
-* Mint
+* other tools?
 
 
 
