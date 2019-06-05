@@ -11,7 +11,7 @@ The starting point are `fastq` files, one per sample, merged from different lane
 
 The output of each step is indicated in parentheses.
 
-###Full version
+### Full version
 
 1. Trimming of the 3' adapter and removal of very short sequences (<17 nt)
 
