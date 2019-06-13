@@ -1,0 +1,19 @@
+# Data path
+datadir: "/proj/sllstore2017028/private/data/Apr2018/"
+# Output paths
+resdir: "results/"
+logdir: "logdir/"
+
+
+
+#below added for snakefile versions 05 onwards
+# Indices and reference files
+STAR_REF: "/proj/sllstore2017028/nobackup/nbis4067/reference/dm6_primary/idx_star/STAR/"
+SUBREAD_REF: "/proj/sllstore2017028/nobackup/nbis4067/reference/dm6_primary/idx_subread/dm6"
+BOWTIE_REF: "/proj/sllstore2017028/nobackup/nbis4067/reference/dm6_primary/idx_bowtie/dm6"
+DM6_GTF: "/proj/snic2017-7-171/nobackup/nbis4067/annotation/BDGP6_ensembl.repeatmasker_ucsc.nochr.rep.repfam.gtf"
+GENOME_FA: "/proj/sllstore2017028/nobackup/nbis4067/reference/dm6_primary/dm6.primary.fa"
+
+#this will be removed when NGS Toolbox is available as a conda module
+#NGSTB_PTH: "/home/agata/soft/protrac/TBr2"
+NGSTB_PTH: "/proj/sllstore2017028/nobackup/nbis4067/software"

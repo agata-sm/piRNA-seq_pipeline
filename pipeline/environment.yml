@@ -1,0 +1,19 @@
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - graphviz=2.38.0
+  - xorg-libxrender
+  - xorg-libxpm
+  - ordered-set
+  - snakemake=5.4.3
+  - python=3.5
+  - fastqc=0.11.8
+  - samtools=1.9
+  - star=2.5.3a
+  - cutadapt=1.18
+  - subread=1.6.3
+  - bowtie=1.2.2
+  - multiqc=1.7
+  - protrac=2.4.2

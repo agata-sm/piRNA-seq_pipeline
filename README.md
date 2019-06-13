@@ -47,9 +47,9 @@ The output of each step is indicated in parentheses.
 
 Other steps may be added at a later time:
 	
-* piPipes https://github.com/bowhan/piPipes
+* [piPipes](https://github.com/bowhan/piPipes)
 
-* Sports https://github.com/junchaoshi/sports1.0
+* [Sports](https://github.com/junchaoshi/sports1.0)
 
 * other tools?
 
@@ -67,11 +67,11 @@ The pipeline can be run locally or on a HTC system. It is self-contained in that
 
 * python 3.x
 
-* NGS toolbox from **XXX** (currently not available as a conda module, to be implemented)
+* [NGS toolbox](http://www.smallrnagroup.uni-mainz.de/software.html) (currently not available as a conda module, to be implemented)
 
-Python can be installed as a miniconda distribution (recommended), see here **XXXX**
+Python can be installed as a [miniconda](https://docs.conda.io/en/latest/miniconda.html) distribution (recommended)
 
-The pipeline has been tested on MacOS (10.14) and Linux (CentOS **XXXX**).
+The pipeline has been tested on MacOS (10.14) and Linux (CentOS).
 
 ## Installation
 
@@ -83,7 +83,7 @@ cd /path/to/pipeline/location
 git clone https://github.com/agata-sm/piRNA-seq_pipeline.git
 ```
 
-The first step is to create the python environment which contains all software dependencies. This is done once, and the environment needs to be activated before each run.
+The first step is to create a python environment which contains all software dependencies. This is done once (and may take some time), and the environment needs to be activated before each run.
 
 ```
 ```
@@ -92,4 +92,12 @@ The best way to keep track of the analysis is to keep the directory structure co
 
 
 
-## Running
+## Usage
+
+To run the pipeline you need to make some changes in the configuration files. File `config.yml` contains all project-specific information such paths to the input `fastq` files, paths to installed software (if not yet implemented as a conda package), and paths to output directory, if different than the default (the directory where the Snakemake command given below is executed). File `cluster.yml` is used on a cluster, and currently its content is optimised for cluster Rackham at Uppmax. Finally, file `submit-snakemake.sh` is a bash script used on HTC to run the pipepline (each step of the pipeline is submitted as a job to `SLURM` workload manager)
+
+
+```
+```
+
+## Output
