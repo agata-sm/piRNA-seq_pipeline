@@ -140,37 +140,6 @@ rule map_bowtie_v:
         """
 
 
-rule map_star:
-    input:
-        cutadaptdir + "{condition}.{smpl}.trimmed.fastq.gz"
-    output:
-        star_all + "{condition}.{smpl}.star.sorted.bam",
-        star_all + "{condition}.{smpl}.star.Log.final.out",
-        logdir + "{condition}.{smpl}.star.Log.final.out"
-    shell:
-        """
-        pth="{output[0]}"
-        echo $pth
-        TMPDIR="${{TMPDIR:-/tmp}}"
-
-        STAR --genomeDir {config[STAR_REF]} \
-        --readFilesIn {input} \
-        --outFileNamePrefix $TMPDIR/{wildcards.condition}.{wildcards.smpl}.star. --runThreadN 4 --outFilterMultimapNmax 999 --outFilterMismatchNmax 1 \
-        --outSAMtype BAM Unsorted --outSAMattributes All --outSAMunmapped Within --outFilterMultimapScoreRange 1 \
-        --seedSearchStartLmax 15 --alignIntronMax 0 --readFilesCommand zcat
-    
-
-        cp $TMPDIR/*out $(dirname {output[0]})
-        cp $TMPDIR/*tab $(dirname {output[0]})
-
-        samtools sort -T $TMPDIR/{wildcards.condition}_{wildcards.smpl}.star.tmp -@ 4 -o {output[0]} $TMPDIR/{wildcards.condition}.{wildcards.smpl}.star.Aligned.out.bam
-        
-        ls $TMPDIR
-
-        samtools index {output[0]}
-        cp {output[1]} {output[2]}
-        """
-
 
 rule featureCounts:
     input:

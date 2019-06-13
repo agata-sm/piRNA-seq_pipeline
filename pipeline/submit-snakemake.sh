@@ -14,11 +14,3 @@ snakemake \
                   -J {cluster.jobname}"
 
 
-
-
-#                  -o {cluster.stdout} \
-#                  -e {cluster.stderr} "
-
-
-
-

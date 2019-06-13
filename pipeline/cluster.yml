@@ -5,14 +5,6 @@ __default__:
   time: "04:00:00"
   jobname: "piRNAproc"
  
-map_star:
-  time: "5:00:00"
-  N: 4
-
-map_subread:
-  time: "10:00:00"
-  N: 4
-
 featureCounts:
   time: "10:00:00"
   N: 1
