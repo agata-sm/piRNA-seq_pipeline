@@ -61,7 +61,8 @@ rule all:
     input:
         multiqcdir + "multiqc_report.html",
         resdir + "rulegraph.png",
-        resdir + "dag.png"
+        resdir + "dag.png",
+        ntdistrdir + "plots" + "{condition}.{smpl}.trimmed.1_nt_distr.tab.plot.pdf"
 
 #idx for bowtie
 rule bowtie_idx:
@@ -121,17 +122,24 @@ rule 1st_nt_distr:
         gz= cutadaptdir + "{condition}.{smpl}.trimmed.fastq.gz"
     output:
         nt1= ntdistrdir + "{condition}.{smpl}.trimmed.1_nt_distr.tab",
-        nt10= ntdistrdir + "{condition}.{smpl}.trimmed.10_nt_distr.tab",
-        plot1= ntdistrdir + "plots" + "{condition}.{smpl}.trimmed.1_nt_distr.tab.plot.pdf",
-        plot0= ntdistrdir + "plots" + "{condition}.{smpl}.trimmed.10_nt_distr.tab.plot.pdf"
+        nt10= ntdistrdir + "{condition}.{smpl}.trimmed.10_nt_distr.tab"
     shell:
         """
         TMPDIR="${{TMPDIR:-/tmp}}"
         perl /proj/sllstore2017028/private/nbis4067/scripts/src/1st_nt_distr_v1.3.pl --infile {input.gz} --outdir $(dirname {output.nt1})
-        Rscript /proj/sllstore2017028/private/nbis4067/scripts/src/plot_distr_1_10.R --indir $(dirname {output.nt1})
         """
 
-
+rule plots:
+    input:
+        expand(ntdistrdir + "{condition}.{fastq}.1_nt_distr.tab", zip, condition=conditions, fastq=fastq_samples),
+        expand(ntdistrdir + "{condition}.{fastq}.10_nt_distr.tab", zip, condition=conditions, fastq=fastq_samples)
+    output:
+        expand(ntdistrdir + "plots" + "{condition}.{fastq}.1_nt_distr.tab.plot.pdf", zip, condition=conditions, fastq=fastq_samples),
+        expand(ntdistrdir + "plots" + "{condition}.{fastq}.10_nt_distr.tab.plot.pdf", zip, condition=conditions, fastq=fastq_samples),
+    shell:
+        """
+        Rscript /proj/sllstore2017028/private/nbis4067/scripts/src/plot_distr_1_10.R --indir $(dirname {output[0]})
+        """
 
 
 rule map_bowtie_v1:
