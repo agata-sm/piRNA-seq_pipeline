@@ -1,4 +1,5 @@
 channels:
+  - r
   - bioconda
   - conda-forge
   - defaults
@@ -15,8 +16,7 @@ dependencies:
   - bowtie=1.2.2
   - multiqc=1.7
   - protrac=2.4.2
-  - r=3.6.0
-  - r-ggplot2=3.1.1
+  - r-base=3.5.1
+  - r-ggplot2=3.0.0
   - r-reshape2=1.4.3
   - r-optparse=1.6.1
-  
