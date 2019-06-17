@@ -3,11 +3,11 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - snakemake=5.5.0
   - graphviz=2.38.0
   - xorg-libxrender
   - xorg-libxpm
   - ordered-set
-  - snakemake=5.4.3
   - python=3.5
   - fastqc=0.11.8
   - samtools=1.9
@@ -15,3 +15,8 @@ dependencies:
   - bowtie=1.2.2
   - multiqc=1.7
   - protrac=2.4.2
+  - r-base=3.6.0
+  - r-essentials=3.6.0
+  - r-ggplot2=3.1.1
+  - r-optparse=1.6.1
+  - r-reshape2=1.4.3

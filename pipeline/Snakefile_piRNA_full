@@ -19,10 +19,11 @@ multiqcdir = resdir + "multiqc/"
 bwt_idx_dir = resdir + "bwt_idx/"
 
 mappeddir= resdir + "mapped/"
+
+bowtie_n= mappeddir + "bowtie_n/"
 bowtie_v= mappeddir + "bowtie_v/"
-
-ntdistrdir= resdir + "nt_distribution"
-
+star_all= mappeddir + "star/"
+subread_all= mappeddir + "subread/"
 
 logdir = config["logdir"]
 
@@ -55,7 +56,7 @@ fastq_samples=list(OrderedSet(fastq_samples_all))
 #####################
 
 
-report: resdir + "report/piRNA_minimal.rst"
+report: resdir + "report/piRNA_full.rst"
 
 rule all:
     input:
@@ -115,22 +116,6 @@ rule fastqc:
         mv {wildcards.id}.trimmed_fastqc.html {output.html}
         mv {wildcards.id}.trimmed_fastqc.zip {output.ziparch}
         """
-
-rule 1st_nt_distr:
-    input:
-        gz= cutadaptdir + "{condition}.{smpl}.trimmed.fastq.gz"
-    output:
-        nt1= ntdistrdir + "{condition}.{smpl}.trimmed.1_nt_distr.tab",
-        nt10= ntdistrdir + "{condition}.{smpl}.trimmed.10_nt_distr.tab",
-        plot1= ntdistrdir + "plots" + "{condition}.{smpl}.trimmed.1_nt_distr.tab.plot.pdf",
-        plot0= ntdistrdir + "plots" + "{condition}.{smpl}.trimmed.10_nt_distr.tab.plot.pdf"
-    shell:
-        """
-        TMPDIR="${{TMPDIR:-/tmp}}"
-        perl /proj/sllstore2017028/private/nbis4067/scripts/src/1st_nt_distr_v1.3.pl --infile {input.gz} --outdir $(dirname {output.nt1})
-        Rscript /proj/sllstore2017028/private/nbis4067/scripts/src/plot_distr_1_10.R --indir $(dirname {output.nt1})
-        """
-
 
 
 

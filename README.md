@@ -7,6 +7,10 @@ provided in a `gtf` annotation file.
 
 The starting point are `fastq` files, one per sample, merged from different lanes if applicable.
 
+
+***OBS!!!*** This is still under active developlent and testing and may not really work yet.
+
+
 ## Workflow description
 
 The output of each step is indicated in parentheses.
