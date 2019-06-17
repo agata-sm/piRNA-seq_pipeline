@@ -4,7 +4,7 @@ channels:
   - defaults
 dependencies:
   - snakemake=5.5.0
-  - graphviz=2.38.0
+  - graphviz=2.40.1
   - xorg-libxrender
   - xorg-libxpm
   - ordered-set
@@ -15,7 +15,7 @@ dependencies:
   - bowtie=1.2.2
   - multiqc=1.7
   - protrac=2.4.2
-  - r-base=3.6.0
+  - r=3.6.0
   - r-essentials=3.6.0
   - r-ggplot2=3.1.1
   - r-reshape2=1.4.3
