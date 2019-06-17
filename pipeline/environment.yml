@@ -16,6 +16,7 @@ dependencies:
   - multiqc=1.7
   - protrac=2.4.2
   - r=3.6.0
-  - r-essentials=3.6.0
   - r-ggplot2=3.1.1
   - r-reshape2=1.4.3
+  - r-optparse=1.6.1
+  
