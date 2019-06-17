@@ -135,7 +135,7 @@ rule plots:
         expand(ntdistrdir + "{condition}.{fastq}.10_nt_distr.tab", zip, condition=conditions, fastq=fastq_samples)
     output:
         expand(ntdistrdir + "plots" + "{condition}.{fastq}.1_nt_distr.tab.plot.pdf", zip, condition=conditions, fastq=fastq_samples),
-        expand(ntdistrdir + "plots" + "{condition}.{fastq}.10_nt_distr.tab.plot.pdf", zip, condition=conditions, fastq=fastq_samples),
+        expand(ntdistrdir + "plots" + "{condition}.{fastq}.10_nt_distr.tab.plot.pdf", zip, condition=conditions, fastq=fastq_samples)
     shell:
         """
         Rscript /proj/sllstore2017028/private/nbis4067/scripts/src/plot_distr_1_10.R --indir $(dirname {output[0]})
