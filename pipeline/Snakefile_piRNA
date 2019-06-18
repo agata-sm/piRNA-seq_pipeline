@@ -137,7 +137,7 @@ rule plots:
         directory(ntdistrdir + "plots")
     shell:
         """
-        Rscript /proj/sllstore2017028/private/nbis4067/scripts/src/plot_distr_1_10.R --indir $(dirname {output[0]})
+        Rscript /proj/sllstore2017028/private/nbis4067/scripts/src/plot_distr_1_10.R --indir $(dirname {input[0]})
         """
 
 
