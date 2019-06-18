@@ -62,7 +62,7 @@ rule all:
         multiqcdir + "multiqc_report.html",
         resdir + "rulegraph.png",
         resdir + "dag.png",
-        ntdistrdir + "plots" + "{condition}.{smpl}.trimmed.1_nt_distr.tab.plot.pdf"
+        directory(ntdistrdir + "plots")
 
 #idx for bowtie
 rule bowtie_idx:
