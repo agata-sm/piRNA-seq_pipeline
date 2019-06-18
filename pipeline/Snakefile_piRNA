@@ -131,8 +131,8 @@ rule nt_distr:
 
 rule plots:
     input:
-        expand(ntdistrdir + "{condition}.{smpl}.trimmed.1_nt_distr.tab", zip, condition=conditions, fastq=fastq_samples),
-        expand(ntdistrdir + "{condition}.{smpl}.trimmed.10_nt_distr.tab", zip, condition=conditions, fastq=fastq_samples)
+        expand(ntdistrdir + "{condition}.{smpl}.trimmed.1_nt_distr.tab", zip, condition=conditions, smpl=fastq_samples),
+        expand(ntdistrdir + "{condition}.{smpl}.trimmed.10_nt_distr.tab", zip, condition=conditions, smpl=fastq_samples)
     output:
         directory(ntdistrdir + "plots")
     shell:
