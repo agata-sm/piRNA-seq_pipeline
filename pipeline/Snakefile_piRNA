@@ -21,7 +21,7 @@ bwt_idx_dir = resdir + "bwt_idx/"
 mappeddir= resdir + "mapped/"
 bowtie_v= mappeddir + "bowtie_v/"
 
-ntdistrdir= resdir + "nt_distribution"
+ntdistrdir= resdir + "nt_distribution/"
 
 
 logdir = config["logdir"]
