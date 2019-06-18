@@ -117,7 +117,7 @@ rule fastqc:
         mv {wildcards.id}.trimmed_fastqc.zip {output.ziparch}
         """
 
-rule 1st_nt_distr:
+rule nt_distr:
     input:
         gz= cutadaptdir + "{condition}.{smpl}.trimmed.fastq.gz"
     output:
