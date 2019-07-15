@@ -20,3 +20,7 @@ dependencies:
   - r-ggplot2=3.0.0
   - r-reshape2=1.4.3
   - r-optparse=1.6.1
+  - subread=1.6.3
+  - bedops=2.4.36
+  - r-knitr=1.23
+  - r-xtable=1.8_4

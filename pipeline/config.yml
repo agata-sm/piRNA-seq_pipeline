@@ -1,19 +1,23 @@
+#working directory i.e. parent directory where the results are written
+workdir: "/proj/sllstore2017028/nobackup/nbis4067/results/data2018/april2018/"
+
 # Data path
-datadir: "/proj/sllstore2017028/private/data/Apr2018/"
+datadir: ""
+
+
 # Output paths
 resdir: "results/"
 logdir: "logdir/"
 # Snakefile location
-snkpth: "/proj/sllstore2017028/nobackup/nbis4067/piRNA-seq_pipeline/pipeline/Snakefile_piRNA"
+snkpth: "/Snakefile_piRNA_full"
+# location of /src directory with auxiliary scripts for data summarisation and plotting
+srcpth: ""
 
-
-#below added for snakefile versions 05 onwards
 # Indices and reference files
-STAR_REF: "/proj/sllstore2017028/nobackup/nbis4067/reference/dm6_primary/idx_star/STAR/"
-BOWTIE_REF: "/proj/sllstore2017028/nobackup/nbis4067/reference/dm6_primary/idx_bowtie/dm6"
-DM6_GTF: "/proj/snic2017-7-171/nobackup/nbis4067/annotation/BDGP6_ensembl.repeatmasker_ucsc.nochr.rep.repfam.gtf"
-GENOME_FA: "/proj/sllstore2017028/nobackup/nbis4067/reference/dm6_primary/dm6.primary.fa"
+ENS_GENOME_FA: "/proj/sllstore2017028/nobackup/nbis4067/reference/ensembl/Drosophila_melanogaster.BDGP6.22.dna.toplevel.fa"
+ENS_GTF: "/proj/sllstore2017028/nobackup/nbis4067/reference/ensembl/Drosophila_melanogaster.BDGP6.22.96.dm6_RepearMasker.gtf"
+REPEATMASKER_GTF: "/proj/sllstore2017028/nobackup/nbis4067/reference/ensembl/dm6.RepeatMasker.ensembl.biotype.repfam.gtf"
 
 #this will be removed when NGS Toolbox is available as a conda module
 #NGSTB_PTH: "/home/agata/soft/protrac/TBr2"
-NGSTB_PTH: "/proj/sllstore2017028/nobackup/nbis4067/software"
+NGSTB_PTH: ""

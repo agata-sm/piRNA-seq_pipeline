@@ -7,47 +7,43 @@ from ordered_set import OrderedSet
 # Config file
 configfile: "config.yml"
 
+#working directory
+workdir: config['workdir']
+
 # Paths
 datadir = config["datadir"]
 
 resdir= config["resdir"]
 
-dataprocdir= resdir + "fastq_processed/"
 fastqcdir = resdir + "fastqc/"
 cutadaptdir= resdir + "cutadapt/"
 multiqcdir = resdir + "multiqc/"
 bwt_idx_dir = resdir + "bwt_idx/"
 
 mappeddir= resdir + "mapped/"
-
-bowtie_n= mappeddir + "bowtie_n/"
 bowtie_v= mappeddir + "bowtie_v/"
-star_all= mappeddir + "star/"
-subread_all= mappeddir + "subread/"
+
+ntdistrdir= resdir + "nt_distribution/"
+protracdir= resdir + "proTRAC/"
+protracdir_runs= protracdir + "runs/"
+protracdir_smpl= protracdir + "samples/"
+protracdir_proc= protracdir + "processed/"
+protracdir_merged= protracdir + "merged/"
+
 
 logdir = config["logdir"]
 
 tmpdir= os.getenv('TMPDIR', default='/tmp')
 
+tempdir= resdir + "temporary/"
+
 # Get samples & file bases in the fastq data directory
-fastq_base = glob.glob(datadir + "**/*.fastq.gz")                  
+fastq_base = glob.glob(datadir + "*.fastq.gz")                  
 fastq_base = [s.replace('.fastq.gz', '') for s in fastq_base]
-fastq_pths = fastq_base #list of input fastq files with Paths       #['/Users/agatasmialowska/training/snkmk/tst3/v0/data/fin/ContSV/Index2_S9t_L002_R1_001', ...
-fastq_base = [s.replace(datadir, '') for s in fastq_base]           #['ContSV/Index2_S9t_L002_R1_001', 'ContSV/Index2_S9t_L001_R1_001', 'OxSV/Index1_S5t_L001_R1_001', 'OxSV/Index1_S5t_L002_R1_001']
+fastq_pths = fastq_base #list of input fastq files with Paths       
+fastq_base = [s.replace(datadir, '') for s in fastq_base]
 
-# Get sample names ###### TO BE FIXED LATER
-samples = [s.replace('_L001_R1_001', '') for s in fastq_base]
-samples = [s.replace('_L002_R1_001', '') for s in samples]          #['ContSV/Index2_S9t', 'ContSV/Index2_S9t', 'OxSV/Index1_S5t', 'OxSV/Index1_S5t']
-
-
-samples_base = list(set(samples))                                   #['ContSV/Index2_S9t', 'OxSV/Index1_S5t']
-
-# Get subdir names
-(conditions_all, fastq_samples_all, lanes) = glob_wildcards(datadir + "{condition}/{smpl}_L00{lane}_R1_001.fastq.gz") #['ContSV', 'ContSV', 'OxSV', 'OxSV'] & ['Index2_S9t_L002_R1_001', 'Index2_S9t_L001_R1_001', 'Index1_S5t_L001_R1_001', 'Index1_S5t_L002_R1_001']
-lanes=set(lanes)
-conditions=list(OrderedSet(conditions_all))
-fastq_samples=list(OrderedSet(fastq_samples_all))
-
+samples_base = list(set(fastq_base))
 
 #####################
 ## TMPDIR
@@ -56,48 +52,46 @@ fastq_samples=list(OrderedSet(fastq_samples_all))
 #####################
 
 
-report: resdir + "report/piRNA_full.rst"
+report: resdir + "report/piRNA.rst"
 
 rule all:
     input:
         multiqcdir + "multiqc_report.html",
         resdir + "rulegraph.png",
-        resdir + "dag.png"
+        resdir + "dag.png",
+        ntdistrdir + "plots",
+        #expand(protracdir_runs + "proTRAC_{id}", id=samples_base),
+        #expand(protracdir_proc + "{id}_processed/" + "{id}.proTRAC.bed", id=samples_base)
+        protracdir_merged + "proTRAC_merged_clusters.bed",
+        protracdir_proc + "plots/proTRAC_stats_plots.pdf",
+        bowtie_v + "counted_by_gene_biotype/plots/biotype_representation.plot.pdf"
+
 
 #idx for bowtie
 rule bowtie_idx:
     input:
-        config["GENOME_FA"]
+        config["ENS_GENOME_FA"]
     output:
         idx= bwt_idx_dir + "dm6_bwt.1.ebwt",
         idxrev= bwt_idx_dir + "dm6_bwt.rev.1.ebwt"
+    log:
+        logdir + "bwt_idx.log"
     shell:
         """
         pth="{output.idx}"
-        bowtie-build --threads 2 -f {input} ${{pth%.1.ebwt}}
-        """
-
-rule cat_lanes:
-    input:
-        expand(datadir + "{{condition}}/{{smpl}}_L00{lane}_R1_001.fastq.gz", lane=lanes)
-    output:
-        dataprocdir + "{condition}.{smpl}_L000_R1_001.fastq.gz"
-    shell:
-        """
-        cat {input} > {output}
+        bowtie-build --threads 2 -f {input} ${{pth%.1.ebwt}} &> {log}
         """
 
 
 rule cutadapt:
     input:
-        dataprocdir + "{condition}.{smpl}_L000_R1_001.fastq.gz"
+        datadir + "{id}.fastq.gz"
     output:
-        fastqgz= cutadaptdir + "{condition}.{smpl}.trimmed.fastq.gz",
-        log= logdir + "{condition}.{smpl}.cutadapt.log"
+        fastqgz= cutadaptdir + "{id}.trimmed.fastq.gz",
+        log= logdir + "{id}.cutadapt.log"
     shell:
         """
         cutadapt -a AGATCGGAAGAGCA -m 17 -j 0 -o {output.fastqgz} {input} &> {output.log}
-        rm {input}
         """
 
 
@@ -117,16 +111,39 @@ rule fastqc:
         mv {wildcards.id}.trimmed_fastqc.zip {output.ziparch}
         """
 
+rule nt_distr:
+    input:
+        gz= cutadaptdir + "{id}.trimmed.fastq.gz"
+    output:
+        nt1= ntdistrdir + "{id}.trimmed.1_nt_distr.tab",
+        nt10= ntdistrdir + "{id}.trimmed.10_nt_distr.tab"
+    shell:
+        """
+        TMPDIR="${{TMPDIR:-/tmp}}"
+        perl src/plotting/1st_nt_distr_v1.3.pl --infile {input.gz} --outdir $(dirname {output.nt1})
+        """
+
+rule plots:
+    input:
+        expand(ntdistrdir + "{id}.trimmed.1_nt_distr.tab", id=samples_base),
+        expand(ntdistrdir + "{id}.trimmed.10_nt_distr.tab", id=samples_base)
+    output:
+        directory(ntdistrdir + "plots")
+    shell:
+        """
+        echo $(dirname {input[0]})
+        Rscript src/plotting/plot_distr_1_10.R --indir $(dirname {input[0]})
+        """
 
 
 rule map_bowtie_v1:
     input:
-        gz= cutadaptdir + "{condition}.{smpl}.trimmed.fastq.gz",
+        gz= cutadaptdir + "{id}.trimmed.fastq.gz",
         idx= bwt_idx_dir + "dm6_bwt.1.ebwt",
         idxrev= bwt_idx_dir + "dm6_bwt.rev.1.ebwt"
     output:
-        log= logdir + "{condition}.{smpl}.bowtie_v1.log",
-        bam= bowtie_v + "{condition}.{smpl}.bwt_v1.sorted.bam"
+        log= logdir + "{id}.bowtie_v1.log",
+        bam= bowtie_v + "{id}.bwt_v1.sorted.bam"
     shell:
         """
         pth="{input.idx}"
@@ -134,7 +151,7 @@ rule map_bowtie_v1:
         TMPDIR="${{TMPDIR:-/tmp}}"
        
         gzip -dc < {input.gz} | bowtie -v 1 -a --best --strata \
-        -q -S -p 2 -t ${{pth%.1.ebwt}} - 2> {output.log} | samtools sort -T $TMPDIR/{wildcards.condition}_{wildcards.smpl}.tmp -o {output.bam} -
+        -q -S -p 2 -t ${{pth%.1.ebwt}} - 2> {output.log} | samtools sort -T $TMPDIR/{wildcards.id}.tmp -o {output.bam} -
         
         samtools index {output.bam}
         """
@@ -143,24 +160,44 @@ rule map_bowtie_v1:
 
 rule featureCounts:
     input:
-        expand(bowtie_v + "{condition}.{smpl}.bwt_v1.sorted.bam", zip, condition=conditions, smpl=fastq_samples)
+        expand(bowtie_v + "{id}.bwt_v1.sorted.bam", id=samples_base)
     output:
         geneid_cnt= bowtie_v + "counted_by_gene_id/geneid.counts.fCnts.tab",
         biotype_cnt= bowtie_v + "counted_by_gene_biotype/biotype.counts.fCnts.tab",
+        repeatid_cnt= bowtie_v + "counted_by_repeat_id/repeat_geneid.counts.fCnts.tab",
         geneid_log= logdir + "geneid.counts.fCnts.tab.summary",
+        repeatid_log= logdir + "repeat_geneid.counts.fCnts.tab.summary",
         biotype_log= logdir + "biotype.counts.fCnts.tab.summary"
     shell:
         """
         featureCounts -M -s 0 --fraction -t exon -g gene_id \
-        -a {config[DM6_GTF]} \
+        -a {config[ENS_GTF]} \
         -o {output.geneid_cnt} {input}
 
         featureCounts -M -s 0 --fraction -t exon -g gene_biotype \
-        -a {config[DM6_GTF]} \
+        -a {config[ENS_GTF]} \
         -o {output.biotype_cnt} {input}
+
+        featureCounts -M -s 0 --fraction -t exon -g gene_id \
+        -a {config[REPEATMASKER_GTF]} \
+        -o {output.repeatid_cnt} {input}
 
         cp {output.geneid_cnt}.summary {output.geneid_log}
         cp {output.biotype_cnt}.summary {output.biotype_log}
+        cp {output.repeatid_cnt}.summary {output.repeatid_log}
+        """
+
+rule plot_biotype:
+    input:
+        bowtie_v + "counted_by_gene_biotype/biotype.counts.fCnts.tab"
+    output:
+        tmp= temporary(bowtie_v + "counted_by_gene_biotype/foo.tab"),
+        plot= bowtie_v + "counted_by_gene_biotype/plots/biotype_representation.plot.pdf"
+    shell:
+        """
+        awk 'NR>1{{print }}' {input} | awk '{{printf $1; for(i=7;i<=NF;i++) printf "\t" $i; printf ORS}}' >{output.tmp}
+
+        Rscript src/plotting/plot_biotype.R --infile {output.tmp}
         """
 
 ################################
@@ -168,9 +205,106 @@ rule featureCounts:
 ## proTRAC
 ################################
 
+rule preproc_reads_proTRAC:
+    input:
+        cutadaptdir + "{id}.trimmed.fastq.gz"
+    output:
+        tempdir + "{id}.collapsed.no-dust.map.weighted-10000-1000-b-1"
+    log:
+        map= logdir + "{id}.sRNAmapper.stdouterr.log",
+        realloc= logdir + "{id}.reallocate.stdouterr.log"
+    shell:
+        """
+        #TMPDIR="${{TMPDIR:-/tmp}}"
+        
+        TMPDIR="/Users/agatasmialowska/NBISproj/4067_sRNAseq_piRNAs/4067_analysis/pipeline_local/tmpdir"
+        mkdir -p $TMPDIR
+        
+        cp {input} $TMPDIR
+        gzip -d $TMPDIR/{wildcards.id}.trimmed.fastq.gz
+        
+        echo ""
+        echo "read preprocessing for file {input}"
+
+        perl {config[NGSTB_PTH]}/TBr2/TBr2_fastq2fasta.pl -i $TMPDIR/{wildcards.id}.trimmed.fastq -o $TMPDIR/{wildcards.id}.trimmed.fa
+        
+        perl {config[NGSTB_PTH]}/TBr2/TBr2_collapse.pl -i $TMPDIR/{wildcards.id}.trimmed.fa -o $TMPDIR/{wildcards.id}.collapsed.fa
+
+        perl {config[NGSTB_PTH]}/TBr2/TBr2_duster.pl -i $TMPDIR/{wildcards.id}.collapsed.fa
+
+        echo ""
+        echo "read mapping for file {input}"
 
 
+        perl {config[NGSTB_PTH]}/sRNAmapper.pl -i $TMPDIR/{wildcards.id}.collapsed.fa.no-dust \
+            -g {config[ENS_GENOME_FA]} -alignments best -output $TMPDIR/{wildcards.id}.collapsed.no-dust.map &> {log.map}
+    
+        echo ""
+        echo "alignment post processing for file {input}"
 
+        perl {config[NGSTB_PTH]}/reallocate.pl $TMPDIR/{wildcards.id}.collapsed.no-dust.map 10000 1000 b 1 &> {log.realloc}
+
+        mv $TMPDIR/{wildcards.id}.collapsed.no-dust.map.weighted-10000-1000-b-1 {output}
+        echo ""
+        """
+     
+
+
+rule proTRAC:
+    input:
+        tempdir + "{id}.collapsed.no-dust.map.weighted-10000-1000-b-1"
+    output:
+        protrac= directory(protracdir_runs + "proTRAC_{id}"),
+        smpl= protracdir_smpl + "results.table.{id}"
+    log:
+        protrac= logdir + "{id}.proTRAC.stdouterr.log"
+    shell:
+        """     
+        echo ""
+        echo "piRNA cluster detection for file {input}"
+
+        perl {config[NGSTB_PTH]}/proTRAC_2.4.2.pl -genome {config[ENS_GENOME_FA]} \
+            -map {input} \
+            -swsize 1000 -swincr 100 -clsize 500 -pimax 35 -pisize 0.3 -1Tor10A 0.3 &> {log.protrac}
+        
+        echo ""
+        echo "mv proTRAC_{wildcards.id}.* {output.protrac}"
+        mkdir -p $(dirname {output.protrac})/proTRAC_{wildcards.id}
+        mv proTRAC_{wildcards.id}.* {output.protrac}/
+        cp {output.protrac}/**/results.table {output.smpl}
+        """
+
+rule proTRAC_process:
+    input:
+        protracdir_smpl + "results.table.{id}"
+    output:
+        protracdir_proc +  "{id}.proTRAC.bed",
+        protracdir_proc +  "{id}.proTRAC.summary",
+        protracdir_proc +  "{id}.proTRAC.tab"
+    shell:
+        """
+        perl src/parse_proTRAC.pl --infile {input} --outdir $(dirname {output[0]})
+        """
+
+rule merge_clusters:
+    input:
+        expand(protracdir_proc + "{id}.proTRAC.bed", id=samples_base)
+    output:
+        protracdir_merged + "proTRAC_merged_clusters.bed"
+    shell:
+        """
+        bedops -m {input} >{output}
+        """
+
+rule proTRAC_run_plots:
+    input:
+        expand(protracdir_proc + "{id}.proTRAC.summary", id=samples_base)
+    output:
+        protracdir_proc + "plots/proTRAC_stats_plots.pdf"  
+    shell:
+        """
+        Rscript src/plotting/plot_protrac_stats.R --indir $(dirname {input[0]})
+        """
 
 ################################
 ## final rules
@@ -193,9 +327,9 @@ rule generate_rulegraph:
 # Rule: collate MultiQC report
 rule MultiQC:
     input:
-        expand(fastqcdir + "{condition}.{fastq}_fastqc.zip", zip, condition=conditions, fastq=fastq_samples),
-        expand(logdir + "{condition}.{fastq}.cutadapt.log", zip, condition=conditions, fastq=fastq_samples),
-        expand(logdir + "{condition}.{smpl}.bowtie_v1.log", zip, condition=conditions, smpl=fastq_samples),
+        expand(fastqcdir + "{id}_fastqc.zip", id=samples_base),
+        expand(logdir + "{id}.cutadapt.log", id=samples_base),
+        expand(logdir + "{id}.bowtie_v1.log", id=samples_base),
         logdir + "biotype.counts.fCnts.tab.summary",
         logdir + "geneid.counts.fCnts.tab.summary"
     output:

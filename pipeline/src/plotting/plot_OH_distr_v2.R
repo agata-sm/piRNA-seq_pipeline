@@ -8,7 +8,7 @@ require(ggplot2)
 
 option_list = list(
 	make_option(c("-i", "--indir"), type="character", default=NULL, 
-              help="input directory with bam files", metavar="character")
+              help="directory with input files", metavar="character")
 ); 
  
 opt_parser = OptionParser(option_list=option_list);
@@ -44,7 +44,7 @@ for (i in filenames.bam){
 	sample=sub(".bam.txt","",sample, ignore.case = FALSE, perl = FALSE,fixed = FALSE, useBytes = FALSE)
 
 
-	dat=read.table(i,sep="\t",header=T)
+	dat=read.table(i,sep="\t",header=TRUE)
 	rownames(dat)=dat[,1]
 
 	dat$f_1nt=dat$OH_1nt/dat$alignments

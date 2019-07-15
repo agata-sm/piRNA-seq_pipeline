@@ -2,7 +2,7 @@
 
 # Run snakemake
 snakemake \
-    --snakefile /proj/sllstore2017028/nobackup/nbis4067/piRNA-seq_pipeline/pipeline/Snakefile_piRNA \
+    --snakefile /proj/sllstore2017028/nobackup/nbis4067/piRNA-seq_pipeline/pipeline/Snakefile_piRNA_full \
     --rerun-incomplete \
     --jobs 50 \
     --cluster-config cluster.yml \
