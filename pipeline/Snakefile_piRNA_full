@@ -35,7 +35,7 @@ logdir = config["logdir"]
 
 tmpdir= os.getenv('TMPDIR', default='/tmp')
 
-#tempdir= resdir + "temporary/"
+tempdir= resdir + "temporary/"
 
 # Get samples & file bases in the fastq data directory
 fastq_base = glob.glob(datadir + "*.fastq.gz")                  
