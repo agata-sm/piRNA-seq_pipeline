@@ -35,7 +35,7 @@ logdir = config["logdir"]
 
 tmpdir= os.getenv('TMPDIR', default='/tmp')
 
-tempdir= resdir + "temporary/"
+#tempdir= resdir + "temporary/"
 
 # Get samples & file bases in the fastq data directory
 fastq_base = glob.glob(datadir + "*.fastq.gz")                  
@@ -120,7 +120,7 @@ rule nt_distr:
     shell:
         """
         TMPDIR="${{TMPDIR:-/tmp}}"
-        perl src/plotting/1st_nt_distr_v1.3.pl --infile {input.gz} --outdir $(dirname {output.nt1})
+        perl {config[srcpth]}/plotting/1st_nt_distr_v1.3.pl --infile {input.gz} --outdir $(dirname {output.nt1})
         """
 
 rule plots:
@@ -132,7 +132,7 @@ rule plots:
     shell:
         """
         echo $(dirname {input[0]})
-        Rscript src/plotting/plot_distr_1_10.R --indir $(dirname {input[0]})
+        Rscript {config[srcpth]}/plotting/plot_distr_1_10.R --indir $(dirname {input[0]})
         """
 
 
@@ -197,7 +197,7 @@ rule plot_biotype:
         """
         awk 'NR>1{{print }}' {input} | awk '{{printf $1; for(i=7;i<=NF;i++) printf "\t" $i; printf ORS}}' >{output.tmp}
 
-        Rscript src/plotting/plot_biotype.R --infile {output.tmp}
+        Rscript {config[srcpth]}/plotting/plot_biotype.R --infile {output.tmp}
         """
 
 ################################
@@ -215,11 +215,8 @@ rule preproc_reads_proTRAC:
         realloc= logdir + "{id}.reallocate.stdouterr.log"
     shell:
         """
-        #TMPDIR="${{TMPDIR:-/tmp}}"
-        
-        TMPDIR="/Users/agatasmialowska/NBISproj/4067_sRNAseq_piRNAs/4067_analysis/pipeline_local/tmpdir"
-        mkdir -p $TMPDIR
-        
+        TMPDIR="${{TMPDIR:-/tmp}}"
+                
         cp {input} $TMPDIR
         gzip -d $TMPDIR/{wildcards.id}.trimmed.fastq.gz
         
@@ -283,7 +280,7 @@ rule proTRAC_process:
         protracdir_proc +  "{id}.proTRAC.tab"
     shell:
         """
-        perl src/parse_proTRAC.pl --infile {input} --outdir $(dirname {output[0]})
+        perl {config[srcpth]}/parse_proTRAC.pl --infile {input} --outdir $(dirname {output[0]})
         """
 
 rule merge_clusters:
@@ -303,7 +300,7 @@ rule proTRAC_run_plots:
         protracdir_proc + "plots/proTRAC_stats_plots.pdf"  
     shell:
         """
-        Rscript src/plotting/plot_protrac_stats.R --indir $(dirname {input[0]})
+        Rscript {config[srcpth]}/plotting/plot_protrac_stats.R --indir $(dirname {input[0]})
         """
 
 ################################
