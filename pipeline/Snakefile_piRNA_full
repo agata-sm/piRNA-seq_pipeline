@@ -263,7 +263,7 @@ rule proTRAC:
         echo ""
         echo "piRNA cluster detection for file {input}"
 
-        perl {config[NGSTB_PTH]}/proTRAC_2.4.2.pl -genome {config[ENS_GENOME_FA]} \
+        perl {config[NGSTB_PTH]}/proTRAC_2.4.3.pl -genome {config[ENS_GENOME_FA]} \
             -map {input} \
             -swsize 1000 -swincr 100 -clsize 500 -pimax 35 -pisize 0.3 -1Tor10A 0.3 &> {log.protrac}
         
