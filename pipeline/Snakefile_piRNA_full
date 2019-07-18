@@ -209,7 +209,7 @@ rule preproc_reads_proTRAC:
     input:
         cutadaptdir + "{id}.trimmed.fastq.gz"
     output:
-        tempdir + "{id}.collapsed.no-dust.map.weighted-10000-1000-b-1"
+        temporary(tempdir + "{id}.collapsed.no-dust.map.weighted-10000-1000-b-1")
     log:
         map= logdir + "{id}.sRNAmapper.stdouterr.log",
         realloc= logdir + "{id}.reallocate.stdouterr.log"
