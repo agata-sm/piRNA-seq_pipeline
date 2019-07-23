@@ -76,6 +76,7 @@ print OUTPUT_TAB "$header_tab\n";
 
 
 my @percnt_1T;
+my $clusters_in_library;
 
 while (<INPUT>){
 	chomp $_;
@@ -124,19 +125,19 @@ while (<INPUT>){
 
 
 	#library-wide summary
-
-	if($_ =~m/Total size of (\d+) predicted piRNA clusters: (\d+) bp \((\d+\.\d+)%\)/ ){
+	if($_ =~m/Total size of (\d+) predicted piRNA clusters: (\d+) bp \((\d+\.?\d*)%\)/ ){
 		my ($cluster_number,$total_cluster_size,$cluster_size_perc)=($1,$2,$3);
+		$clusters_in_library=$cluster_number;
 		print OUTPUT_SUM "sample_id\t$smpl_id\nnumber_of_clusters\t$cluster_number\ntotal_cluster_size_bp\t$total_cluster_size\ncluster_size_perc\t$cluster_size_perc\n";
 	}
 
 
-	if($_ =~m/Non identical sequences that can be assigned to clusters: (\d+) \((\d+\.\d+)%\)/ ){
+	if($_ =~m/Non identical sequences that can be assigned to clusters: (\d+) \((\d+\.?\d*)%\)/ ){
 		my ($total_uniq_reads,$uniq_reads_perc)=($1,$2);
 		print OUTPUT_SUM "unique_tags_in_clusters\t$total_uniq_reads\nperc_unique_tags_in_clusters\t$uniq_reads_perc\n";
 	}
 
-	if($_ =~m/Sequence reads that can be assigned to clusters: (\d+) \((\d+\.\d+)%\)/ ){
+	if($_ =~m/Sequence reads that can be assigned to clusters: (\d+) \((\d+\.?\d*)%\)/ ){
 		my ($total_reads,$reads_perc)=($1,$2);
 		print OUTPUT_SUM "reads_in_clusters\t$total_reads\nperc_reads_in_clusters\t$reads_perc\n";
 	}
@@ -145,9 +146,15 @@ while (<INPUT>){
 close(INPUT);
 
 
-
 my $sum = sum @percnt_1T;
-my $avg_perc_1T= $sum /scalar(@percnt_1T);
+my $avg_perc_1T;
+
+if ($clusters_in_library>0){
+	 $avg_perc_1T= $sum /scalar(@percnt_1T);
+}else{
+	$avg_perc_1T=0;
+}
+
 
 print OUTPUT_SUM "avg_perc_1T_in_clusters\t$avg_perc_1T\n";
 
