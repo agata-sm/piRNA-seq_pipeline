@@ -333,7 +333,7 @@ rule MultiQC:
         multiqcdir + "multiqc_report.html"
     shell:
         """
-        multiqc --outdir $(dirname {output}) {resdir} {logdir}
+        multiqc -f --outdir $(dirname {output}) {resdir} {logdir}        
         """
 
 
