@@ -7,9 +7,10 @@ provided in a `gtf` annotation file.
 
 The starting point are `fastq` files, one per sample, merged from different lanes if applicable.
 
-
+<!-- 
 ***OBS!!!*** This is still under active developlent and testing and may not really work yet.
 
+ -->
 
 ## Workflow description
 
@@ -37,12 +38,12 @@ The output of each step is indicated in parentheses.
 
 	5.2. Merging overlapping clusters from different samples
 
-	5.3. Adding annotation: tissue / sample, directionality, the 1st and the 10th nt signature, abundance. 
+<!-- 	5.3. Adding annotation: tissue / sample, directionality, the 1st and the 10th nt signature, abundance. 
 
 	5.4. Building a comprehensive set of piRNA clusters based on experimental evidence, with annotation from pts 1, 2, 3 (a database) (may be used for a web tool?)
 
 	5.5. Script to parse the piRNA cluster collection from p 5.4 to obtain a `gff` file with clusters of interest to be used directly for read summarisation in p. 6
-
+ -->
 6. 	Summarisiation of the reads mapped to provied annotation files: all Ensembl `exon` features (reporting by `gene_biotype` for QC purposes); piRNA clusters provided by an already processed annotation `gtf` file or obtained from step 4; merged gtf of different annotations: Ensembl `exon` features and piRNA clusters and repeats from RepeatMasker (simple repeats excluded). (count tables)
 
 	6.1 Generating plots of post-alignment QC metrics (biotype distribution, distribution of the 1st nt in reads mapped to piRNA clusters)
@@ -73,26 +74,79 @@ The pipeline can be run locally or on a HTC system. It is self-contained in that
 
 * [NGS toolbox](http://www.smallrnagroup.uni-mainz.de/software.html) (currently not available as a conda module, to be implemented)
 
+* [reallocate.pl](http://www.smallrnagroup.uni-mainz.de/software.html) (currently not available as a conda module, to be implemented)
+
+* [proTRAC 2.4.3](http://www.smallrnagroup.uni-mainz.de/software.html) (currently not available as a conda module, to be implemented)
+
+
 Python can be installed as a [miniconda](https://docs.conda.io/en/latest/miniconda.html) distribution (recommended)
+
+`NGS toolbox`, `reallocate.pl` and `proTRAC 2.4.3` are installed in the project directory on Rackham, and can be also fetched from there. The path to all proTRAC related software is in `config.yml`.
+
 
 The pipeline has been tested on MacOS (10.14) and Linux (CentOS).
 
 ## Installation
 
-To install the pipeline you need to clone the repo:
+### Get the code
+
+To install the pipeline you need to clone this repository to get the code:
 
 ```
 cd /path/to/pipeline/location
 
 git clone https://github.com/agata-sm/piRNA-seq_pipeline.git
 ```
+### Configure conda
 
-The first step is to create a python environment which contains all software dependencies. This is done once (and may take some time), and the environment needs to be activated before each run.
+You need to configure conda to be able to install all necessary packages:
 
 ```
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda config --add channels r
 ```
 
-The best way to keep track of the analysis is to keep the directory structure consistent. The recommended way is to have one master copy of the `Snakefile`, and run-specific copies of the `config.yml` and `cluster.yml` (if using an HTC) in the directory of each run.
+Check if the channels have been added correctly:
+
+```
+conda config --show channels
+```
+
+should result in:
+```
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+```
+
+### Python environment
+
+The first step is to create a python environment which contains all software dependencies. This is done once (and may take some time). 
+
+Navigate to the directory which contains file `environment.yml` which lists all necessary packages. Create the environment named `piRNA_pipeline`. 
+
+```
+conda env create -n piRNA_pipeline -f environment.yml
+```
+
+After the environmnet have been created, it needs to be activated:
+
+
+```
+conda activate piRNA_pipeline
+```
+
+This environment needs to be activated before each pipeline run.
+
+Sometimes the environment needs to be updated, when new package versions are available or new steps are added to the pipeline:
+
+```
+conda activate piRNA_pipeline
+conda env update --file environment.yml
+```
 
 
 
@@ -100,8 +154,162 @@ The best way to keep track of the analysis is to keep the directory structure co
 
 To run the pipeline you need to make some changes in the configuration files. File `config.yml` contains all project-specific information such paths to the input `fastq` files, paths to installed software (if not yet implemented as a conda package), and paths to output directory, if different than the default (the directory where the Snakemake command given below is executed). File `cluster.yml` is used on a cluster, and currently its content is optimised for cluster Rackham at Uppmax. Finally, file `submit-snakemake.sh` is a bash script used on HTC to run the pipepline (each step of the pipeline is submitted as a job to `SLURM` workload manager)
 
+### Configure the pipeline
+
+File `config.yml` contains information on location of important files and directories:
+
+* `datadir` - path to directory with `fastq.gz` files; the lanes have been merged at this point;
+
+* `resdir` - path to results; this is relative to the directory where the pipeline is executed, to keep all logs and output in place
+
+* `logdir` - path to logs; this is relative to the directory where the pipeline is executed, to keep all logs and output in place
+
+* `snkpth` - path to snakefile; no need to change this if the code is executed on Rackham;
+
+* `srcpth` - path to custom scripts in `pipeline/src/`; no need to change this if the code is executed on Rackham;
+
+* `ENS_GENOME_FA` - path to `fasta` file with reference genome sequence (from Ensembl); no need to change this if the code is executed on Rackham;
+
+* `ENS_GTF` - path to `gtf` file with reference genome annotation with gene models (the original from Ensembl with RepeatMasker entries added); no need to change this if the code is executed on Rackham;
+
+* `REPEATMASKER_GTF` - path to `gtf` file with reference genome annotation with RepeatMasker entries (custom processed); no need to change this if the code is executed on Rackham;
+
+* `NGSTB_PTH` - path to directory with `NGS toolbox`, `reallocate.pl` and `proTRAC 2.4.3`; no need to change this if the code is executed on Rackham;
+
+In practice, all entries need to be changed to the relevant paths only before the first run. After that, only the path to `datadir` needs to be set.
+
+
+### Run the pipeline
+
+#### Local mode
+
+I.e. when the pipeline runs on a local computer or a server without any job scheduling system. Steps will be executed consecutively, and the number of cores will be adjusted automatically based on the system configuration.
+
+
+Navigate to the directory where you will run the pipeline, and where the results of this run will be saved:
 
 ```
+cd /proj/piRNA_pipeline/MySample_1
 ```
+
+Activate the conda environment:
+
+```
+conda activate piRNA_pipeline
+```
+
+Copy the config file to the current directory:
+
+```
+cp /proj/piRNA-seq_pipeline/pipeline/config.yml .
+```
+
+Confirm that the path to data `datadir` in file `config.yml` is correct! 
+
+Start the pipeline:
+
+```
+snakemake \
+    --snakefile /proj/piRNA-seq_pipeline/pipeline/Snakefile_piRNA_full \
+    --rerun-incomplete
+```
+
+You can also run the pipeline in the background. This protects the run from accidental session interruption - for example when you connect remotely to the server and the session disconnects.
+
+You can use several programs to achieve this, in this example we use [screen](https://linux.die.net/man/1/screen), which is usually already installed in your Linux distribtion.
+
+First, start the program by typing:
+
+```
+screen 
+```
+
+A new terminal appears. You can start a process in it, disconnect from it, then reconnect at any time.
+
+To start a new screen press `Ctrl-a`, then `c`. Type:
+
+```
+conda activate piRNA_pipeline
+
+snakemake --snakefile /proj/piRNA-seq_pipeline/pipeline/Snakefile_piRNA_full --rerun-incomplete
+```
+then press `Ctrl-a`, then `d`.
+
+To reconnect type `screen -r`
+
+
+
+
+
+
+
+#### HTC mode
+
+I.e. when the pipeline runs on a HTC server with SLURM job scheduling system (for example Uppmax). Steps will be queued and executed in parallel whenever possible, and the number of cores will be adjusted based on information in file `cluster.yml`.
+
+
+Navigate to the directory where you will run the pipeline, and where the results of this run will be saved:
+
+```
+cd /proj/piRNA_pipeline/MySample_1
+```
+
+Activate the conda environment:
+
+```
+conda activate piRNA_pipeline
+```
+
+Copy the config files to the current directory:
+
+```
+cp /proj/piRNA-seq_pipeline/pipeline/config.yml .
+cp /proj/piRNA-seq_pipeline/pipeline/cluster.yml .
+cp /proj/piRNA-seq_pipeline/pipeline/submit-snakemake.sh .
+```
+
+Confirm that the path to data `datadir` in file `config.yml` is correct! 
+
+
+**IMPORTANT!** File `submit-snakemake.sh` is used to actually start the pipeline - it is therefore necessary to control that the path to the snakefile `Snakefile_piRNA_full` is correct! In this pipeline version the path is on Rackham - therefore no need to change anything if the piepline is run on Rackham.
+
+
+Start the pipeline:
+
+```
+bash submit-snakemake.sh
+```
+
+It is ***strongly*** recommended that you use `screen` whenever running the pipeline remotely.
+
+
+Start `screen` by typing:
+
+```
+screen 
+```
+
+A new terminal appears. You can start a process in it, disconnect from it, then reconnect at any time.
+
+To start a new screen press `Ctrl-a`, then `c`. Type:
+
+```
+conda activate piRNA_pipeline
+
+bash submit-snakemake.sh
+```
+then press `Ctrl-a`, then `d`.
+
+To reconnect type `screen -r`
+
+
+
+
+
+### Comments
+
+The best way to keep track of the analysis is to keep the directory structure consistent. The recommended way is to have one master copy of the `Snakefile`, and run-specific copies of the `config.yml` and `cluster.yml` (if using an HTC) in the directory of each run.
+
+
 
 ## Output
