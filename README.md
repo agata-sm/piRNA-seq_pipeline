@@ -311,6 +311,8 @@ To reconnect type `screen -r`
 The best way to keep track of the analysis is to keep the directory structure consistent. The recommended way is to have one master copy of the `Snakefile`, and run-specific copies of the `config.yml` and `cluster.yml` (if using an HTC) in the directory of each run.
 
 
+#### Conda on Rackham
+
 Conda is installed in the project directory:
 
 `/proj/snic2017-7-171/conda`
