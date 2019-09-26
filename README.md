@@ -339,3 +339,7 @@ unset __conda_setup
 
 
 ## Output
+
+## References
+
+David Rosenkranz & Hans Zischler. 2012. proTRAC - a software for probabilistic piRNA cluster detection, visualization and analysis. doi: 10.1186/1471-2105-13-5; 
