@@ -311,5 +311,31 @@ To reconnect type `screen -r`
 The best way to keep track of the analysis is to keep the directory structure consistent. The recommended way is to have one master copy of the `Snakefile`, and run-specific copies of the `config.yml` and `cluster.yml` (if using an HTC) in the directory of each run.
 
 
+Conda is installed in the project directory:
+
+`/proj/snic2017-7-171/conda`
+
+There is a chunk of code that needs to be added to your `.bashrc` if you want to use this installation:
+
+```
+#### Miniconda2 ####
+# >>> conda init >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$(CONDA_REPORT_ERRORS=false '/proj/snic2017-7-171/conda/bin/conda' shell.bash hook 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    \eval "$__conda_setup"
+else
+    if [ -f "/proj/snic2017-7-171/conda/etc/profile.d/conda.sh" ]; then
+        . "/proj/snic2017-7-171/conda/etc/profile.d/conda.sh"
+        CONDA_CHANGEPS1=false conda activate base
+    else
+        \export PATH="/proj/snic2017-7-171/conda/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda init <<<
+```
+
+
 
 ## Output
