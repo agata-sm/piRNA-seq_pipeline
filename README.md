@@ -70,7 +70,7 @@ The pipeline can be run locally or on a HTC system. It is self-contained in that
 
 ### Requirements
 
-* python 3.x
+* python 2.7
 
 * [NGS toolbox](http://www.smallrnagroup.uni-mainz.de/software.html) (currently not available as a conda module, to be implemented)
 
