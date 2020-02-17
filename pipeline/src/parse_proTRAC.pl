@@ -89,6 +89,9 @@ while (<INPUT>){
 		my $cluster_id="cluster_$1";
 		
 		$line[1]=~m/Location: (.+)$/;
+		my $contig_long=$1;
+		#remove all characters after the first space
+		$contig_long=~m/^(\S+)\s.+/;
 		my $contig=$1;
 
 		$line[2]=~m/Coordinates: (\d+)-(\d+)/;
