@@ -14,7 +14,7 @@ snkpth: "/proj/snic2019-30-8/nbis4067/piRNA-seq_pipeline/pipeline/Snakefile_piRN
 srcpth: "/proj/snic2019-30-8/nbis4067/piRNA-seq_pipeline/pipeline/src/"
 
 # Indices and reference files
-ENS_GENOME_FA: "/proj/snic2019-30-8/nbis4067/reference/ensembl/Drosophila_melanogaster.BDGP6.22.dna.toplevel.fa"
+ENS_GENOME_FA: "/proj/snic2019-30-8/nbis4067/reference/ensembl/Drosophila_melanogaster.BDGP6.dna.toplevel.fa"
 ENS_GTF: "/proj/snic2019-30-8/nbis4067/reference/ensembl/Drosophila_melanogaster.BDGP6.22.96.dm6_RepearMasker.gtf"
 REPEATMASKER_GTF: "/proj/snic2019-30-8/nbis4067/reference/ensembl/dm6.RepeatMasker.ensembl.biotype.repfam.gtf"
 
