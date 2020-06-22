@@ -120,11 +120,8 @@ else{
 			$filetab="$input_dir/$filetab";
 		}
 
-		print "TAB @tab_files\n";
-
-
-		my $number=scalar(@tab_files);
-		print "$number\n@tab_files\n";
+		#my $number=scalar(@tab_files);
+		#print "$number\n@tab_files\n";
 		
 		foreach my $infile_tab (@tab_files){
 			print "processing $infile_tab\n";
