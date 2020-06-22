@@ -140,10 +140,11 @@ else{
 					my @line=split/\t/,$_; #cluster_id	contig	start	end	size_bp	hits	hits_normalised	hits_norm_kb	norm_hits_1T	norm_hits_10A	norm_hits_24_35nt	norm_hits_main_strand	directionality	binding_sites
 
 					my $cluster_id_proTRAC=$line[0];
-					print "$cluster_id_proTRAC\n";
 					my $contig=$line[1];
 					my $start=$line[2];
 					my $end=$line[3];
+
+					print "$cluster_id_proTRAC\t$contig\t$start\t$end\n";
 
 					my $directionality_long=$line[12];
 					$directionality_long=~m/(^\S+)/;# to remove trailing info bi:plus-minus (split between 20214126 and 20214137)
