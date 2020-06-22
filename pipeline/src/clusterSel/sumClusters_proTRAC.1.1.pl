@@ -51,7 +51,7 @@ my $script_name="sumClusters_proTRAC.pl";
 if ($ARGV[0]eq qw '-h'){
 	print "please provide arguments for: \n perl $script_name [arguments]\n";
 	print "arguments:\n";
-	print "--indir: /path/to/directory/processed_proTRAC_clusters/*.proTRAC.tab (multiple possible)\n";
+	print "--indir: /path/to/directory/processed_proTRAC_clusters/*.proTRAC.tab\n";
 	print "--merged: /path/to/merged_clusters.bed (bed file; produced by bedops merge or bedtools intersect)\n";	
 	print "--outfile: /path/to/outfile (recommended to create new each time new data set is added)\n";
 }
@@ -64,10 +64,11 @@ else{
 	
 	my @indirs;
 	GetOptions(
-		'indir=s' => \@indirs,
+		'indir=s' => \(my $indir),
 		'merged=s'		=>	\(my $merged_clusters_bed),
 		'outfile=s'	=>	\(my $outfile)
 	) or die "Error in command line arguments";
+#		'indir=s' => \@indirs,
 
 
 	foreach my $indir_ (@indirs){
@@ -105,7 +106,7 @@ else{
 	my %clusters_direct;
 	my %clusters_info;
 
-	foreach my $input_dir (@indirs){
+#	foreach my $input_dir (@indirs){
 		print "process sample data in\n";
 		print "$input_dir\n";
 
@@ -188,7 +189,7 @@ else{
 			close(INFILE);
 		}	
 
-	}#indir
+#	}#indir
 
 
 	##### process clusters info collected from all sample.tab files	
