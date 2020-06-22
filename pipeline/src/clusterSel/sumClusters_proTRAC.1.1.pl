@@ -64,7 +64,7 @@ else{
 	
 	my @indirs;
 	GetOptions(
-		'indir=s' => \(my $indir),
+		'indir=s' => \(my $input_dir),
 		'merged=s'		=>	\(my $merged_clusters_bed),
 		'outfile=s'	=>	\(my $outfile)
 	) or die "Error in command line arguments";
