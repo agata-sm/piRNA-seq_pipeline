@@ -168,6 +168,8 @@ else{
 							if($contig eq $m_cluster_chr){
 								if ( ($start >= $m_cluster_start) && ($end <= $m_cluster_end) ) {
 
+									print "$cluster_id_proTRAC\t$contig\t$start\t$end\n";
+
 									my $start_gff=$start+1;
 									my $cluster_info="$cluster_id_proTRAC::$start_gff::$end";
 
