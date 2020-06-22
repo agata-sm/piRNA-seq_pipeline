@@ -62,7 +62,7 @@ if ($ARGV[0]eq qw '-h'){
 else{
 	my $parameters=join(' ', @ARGV);
 	
-	my @indirs;
+#	my @indirs;
 	GetOptions(
 		'indir=s' => \(my $input_dir),
 		'merged=s'		=>	\(my $merged_clusters_bed),
@@ -71,9 +71,9 @@ else{
 #		'indir=s' => \@indirs,
 
 
-	foreach my $indir_ (@indirs){
-		print "TO PROCESS $indir_\n";
-	}
+#	foreach my $indir_ (@indirs){
+#		print "TO PROCESS $indir_\n";
+#	}
 
 	##################
 	## parse merged clusters
@@ -140,6 +140,7 @@ else{
 					my @line=split/\t/,$_; #cluster_id	contig	start	end	size_bp	hits	hits_normalised	hits_norm_kb	norm_hits_1T	norm_hits_10A	norm_hits_24_35nt	norm_hits_main_strand	directionality	binding_sites
 
 					my $cluster_id_proTRAC=$line[0];
+					print "$cluster_id_proTRAC\n";
 					my $contig=$line[1];
 					my $start=$line[2];
 					my $end=$line[3];
