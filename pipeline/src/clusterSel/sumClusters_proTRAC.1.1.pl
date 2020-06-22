@@ -30,7 +30,12 @@
 # however, downstream teh information is flattened: each sample ID is present only once and the metrics are averaged
 # this problem is best solved by providing "master cluster" bed file that was generated taking fraction of overlap into account rather than merging all clusters in all samples together
 
-##########
+######
+### perl version 5.18.4
+### DOES NOT WORK on 5.16.x
+
+
+########## NOT
 ### in this version (vs v 0.2):
 # multiple --indir paths supported
 
@@ -144,8 +149,6 @@ else{
 					my $start=$line[2];
 					my $end=$line[3];
 
-					print "$cluster_id_proTRAC\t$contig\t$start\t$end\n";
-
 					my $directionality_long=$line[12];
 					$directionality_long=~m/(^\S+)/;# to remove trailing info bi:plus-minus (split between 20214126 and 20214137)
 					my $directionality=$1;
@@ -167,8 +170,6 @@ else{
 						my($m_cluster_chr,$m_cluster_start,$m_cluster_end)=split/::/,$m_cluster_coords;
 							if($contig eq $m_cluster_chr){
 								if ( ($start >= $m_cluster_start) && ($end <= $m_cluster_end) ) {
-
-									print "$cluster_id_proTRAC\t$contig\t$start\t$end\n";
 
 									my $start_gff=$start+1;
 									my $cluster_info="$cluster_id_proTRAC::$start_gff::$end";
