@@ -548,6 +548,8 @@ If a selection based on the oxidation status of samples is desired, one should u
 
 The first line of the metadata file ***has to*** start with `#`. The names of the factors in the design are up to the user, they just need to be consistent with their usage in the command line. The fields ***have to*** be separated by `tab`.
 
+The sample names **have to** correspond **exactly** to `SAMPLE` in files `SAMPLE.proTRAC.tab` from input directory to script `sumClusters_proTRAC.1.1.pl`.
+
 ***OBS!*** At the moment the scripts do not have format checks and if the format of the metadata is not corrent, a perl-specific error is thrown (in perl jargon), and it may be difficult to decifer what the problem is. So please check the metadata file format!
 
 Let's assume that the metadata file looks like this:
