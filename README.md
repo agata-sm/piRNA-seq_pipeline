@@ -589,7 +589,7 @@ Let's not select clusters as above, with one modification, relaxing the criteria
 perl getClusters_gff.1.0.pl --meta sample_metadata.txt --infile dataset.master.clusters.samples.txt --outfile clusters.norm_hits_1T_0.5_Tissue4_2_ox.gff --clusters norm_hits_1T:0.5 --samples tissue:tissue4:2 --ox condition:ox
 ```
 
-How many clusters were selected in each command?
+How many clusters were selected by each command?
 
 ```
 wc -l *gff
