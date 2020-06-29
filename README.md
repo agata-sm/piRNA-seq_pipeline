@@ -423,19 +423,73 @@ pipeline running directory
 
 ## Selection of Clusters of Interest
 
+It is often desirable to select specific clusters for downstrean analyses. This selection can be performed based on read abundance, presence in tissue or condition of interest or under treatment. These two scripts aid in cluster selection based on cluster metrics colleced by `proTRAC` and their presence in experimental conditions as recorded in metadata file.
+
+1. src/clusterSel/***sumClusters_proTRAC.1.1.pl*** collects cluster characteristics from the dataset by parsing the sample specific cluster information in files `<SAMPLE>.proTRAC.tab`; the final output file of this script links clusters in the "master file" (for example `proTRAC_merged_clusters.bed}` ) to clusters detected in individual samples; careful selection of the "master file" is recommended, more comments on this below;
+
+2. src/clusterSel/***getClusters_gff.1.0.pl*** uses the output file of `sumClusters_proTRAC.1.1.pl` to select clusters with specifc properties; requires sample metadata file.
+
 
 Please note that these scripts require `perl 5.18.4` and perl module `List::MoreUtils`. These are not included in the `conda` environment. Instructions below show how to use these scripts on `rackham` Uppmax cluster.
 
 
+### Comment on Clusters "Master File"
+
+In the 
+
+### To Start on Uppmax
+
+The required modules with correct version of `perl` need to be loaded:
+
+```
+module load  perl/5.18.4
+module load perl_modules/5.18.4
+```
+
+### Script Usage
+
+perl $SCRIPTS/sumClusters_proTRAC.1.1.pl --merged /proj/snic2019-30-8/nbis4067/pipeline_processed/April2018/results/proTRAC/merged/proTRAC_merged_clusters.bed --outfile April2018.all.clusters.samples.txt --indir /proj/snic2019-30-8/nbis4067/pipeline_processed/April2018/results/proTRAC/processed
 
 
-<!-- 
-\begin{itemize}
-  \item\texttt{src/clusterSel/sumClusters\_proTRAC.1.1.pl} collects cluster characteristics from the dataset by parsing the sample specific cluster information in \texttt{<SAMPLE>.proTRAC.tab} files; the final output file of this script links clusters in the "master file" (for example \texttt{proTRAC\_merged\_clusters.bed}) to clusters detected in individual samples; careful selection of the "master file" is recommended, more comments on this in the piRNA-seq pipeline repository;
-  \texttt{src/clusterSel/getClusters\_gff.1.0.pl} uses the output file of \item\texttt{sumClusters\_proTRAC.1.1.pl} to select clusters with specifc properties; requires sample metadata file (details in the piRNA-seq pipeline repository).
-\end{itemize}
+#### Metadata File
 
- -->
+The first line of the metadata file ***has to*** start with `#`. The names of the factors in the design are up to the user, they just need to be consistent with their usage in the command line. The fields ***have to*** be separated by `tab`.
+
+***OBS!*** At the moment the scripts do not have format checks and if the format of the metadata is not corrent, a perl-specific error is thrown (in perl jargon), and it may be difficult to decifer what the problem is. So please check the metadata file format!
+
+Let's assume that the metadata file looks like this:
+
+```
+#sample condition replicate tissue
+Index2_S9_L000 ctrl  1 tissue1
+Index1_S5_L000 ox  1 tissue1
+Index7_S8_L000  ctrl  1 tissue2
+Index8_S7_L000  ctrl  1 tissue3
+Index9_S6_L000  ctrl  1 tissue4
+Index4_S4_L000  ox  1 tissue2
+Index5_S3_L000  ox  1 tissue3
+Index6_S2_L000  ox  1 tissue4
+```
+
+
+### Examples
+
+
+
+
+
+perl $SCRIPTS/sumClusters_proTRAC.1.1.pl --merged /proj/snic2019-30-8/nbis4067/pipeline_processed/April2018/results/proTRAC/merged/proTRAC_merged_clusters.bed --outfile April2018.all.clusters.samples.txt --indir /proj/snic2019-30-8/nbis4067/pipeline_processed/April2018/results/proTRAC/processed
+
+
+
+
+
+
+perl $SCRIPTS/getClusters_gff.1.0.pl --meta /proj/snic2019-30-8/data2018/sample_meta/April2018_sample_metadata.txt --infile April2018.all.clusters.samples.txt --outfile clusters.norm_hits_1T_0.8_Test1_2_ox.gff --clusters norm_hits_1T:0.8 --samples tissue:Testicle3:2 --ox condition:ox
+
+
+perl $SCRIPTS/getClusters_gff.1.0.pl --meta /proj/snic2019-30-8/data2018/sample_meta/April2018_sample_metadata.txt --infile April2018.all.clusters.samples.txt --outfile clusters.norm_hits_1T_0.5_Test1_2_ox.gff --clusters norm_hits_1T:0.5 --samples tissue:Testicle1:2 --ox condition:ox
+
 
 
 ## References
