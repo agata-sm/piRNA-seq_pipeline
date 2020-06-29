@@ -45,9 +45,9 @@ The output of each step is indicated in parentheses.
 	5.5. Script to parse the piRNA cluster collection from p 5.4 to obtain a `gtf` file with clusters of interest to be used directly for read summarisation in p. 6 -->
 
 6. 	Summarisiation of the reads mapped to provied annotation files: all Ensembl `exon` features (reporting by `gene_biotype` for QC purposes); piRNA clusters provided by an already processed annotation `gtf` file or obtained from step 4; merged gtf of different annotations: Ensembl `exon` features and piRNA clusters and repeats from RepeatMasker (simple repeats excluded). (count tables)
-
+<!-- 
 	6.1 Generating plots of post-alignment QC metrics (biotype distribution, distribution of the 1st nt in reads mapped to piRNA clusters)
-
+ -->
 
 
 Following the completion of the pipeline clusters can be further selected, see section 
