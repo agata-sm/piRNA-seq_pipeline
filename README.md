@@ -42,11 +42,15 @@ The output of each step is indicated in parentheses.
 
 	5.4. Building a comprehensive set of piRNA clusters based on experimental evidence, with annotation from pts 1, 2, 3 (a database) (may be used for a web tool?)
 
-	5.5. Script to parse the piRNA cluster collection from p 5.4 to obtain a `gff` file with clusters of interest to be used directly for read summarisation in p. 6
- -->
+	5.5. Script to parse the piRNA cluster collection from p 5.4 to obtain a `gtf` file with clusters of interest to be used directly for read summarisation in p. 6 -->
+
 6. 	Summarisiation of the reads mapped to provied annotation files: all Ensembl `exon` features (reporting by `gene_biotype` for QC purposes); piRNA clusters provided by an already processed annotation `gtf` file or obtained from step 4; merged gtf of different annotations: Ensembl `exon` features and piRNA clusters and repeats from RepeatMasker (simple repeats excluded). (count tables)
 
 	6.1 Generating plots of post-alignment QC metrics (biotype distribution, distribution of the 1st nt in reads mapped to piRNA clusters)
+
+
+
+Following the completion of the pipeline clusters can be further selected, see section 
 
 
 
@@ -60,9 +64,10 @@ Other steps may be added at a later time:
 
 
 
-### Minimal version
+<!-- ### Minimal version
 
 steps 1, 2, 3, 6 of the above
+ -->
 
 ## Installation and running
 
@@ -340,7 +345,98 @@ unset __conda_setup
 
 
 
-## Output
+## Pipeline Output
+
+The structure of the output from executing the pipeline is:
+
+```
+pipeline running directory
+|-- logdir
+|-- out_slurm
+`-- results
+    |-- bwt_idx
+    |-- cutadapt
+    |-- fastqc
+    |-- mapped
+    |   `-- bowtie_v
+    |       |-- counted_by_gene_biotype
+    |       |   `-- plots
+    |       |-- counted_by_gene_id
+    |       `-- counted_by_repeat_id
+    |-- multiqc
+    |   `-- multiqc_data
+    |-- nt_distribution
+    |   `-- plots
+    |-- proTRAC
+    |   |-- merged
+    |   |-- processed
+    |   |   `-- plots
+    |   |-- runs
+    |   |   |-- proTRAC_<SAMPLEID>
+    |   |   |   `-- proTRAC_<SAMPLEID>.collapsed.no-dust.map.weighted-10000-1000-b-1_<TIMESTAMP>
+    |   `-- samples
+    `-- temporary
+```
+
+
+*logdir* - logs from software used in the pipeline run; used for generation of `MultiQC` report
+
+*out_slurm* - logs from `slurm` job scheduling system
+
+***results*** - results
+
+*bwt_idx* - index of the reference genome used for read mapping
+
+*cutadapt* - trimmed reads
+
+*fastqc* - results of read focused QC by `FastQC`
+
+*mapped* - read alignments 
+
+*bowtie_v* - read alignments performed by `bowtie` in `-v` mode
+
+*counted_by_gene_biotype* - reads summarised to gene biotypes (`-g gene_biotype`)
+
+*counted_by_gene_id* - reads summarised to gene ids (`-g gene_id`)
+
+*counted_by_reteat_id* - reads summarised to repeat ids (`-g gene_id`) - in the original pipeline it uses a annotation file which contains only repeats
+
+*multiqc* - results of `MultiQC` run
+
+*nt_distribution* - tables and plots pertaining to distribution of the 1st and the 10th nucleotide in reads (input files from the `cutadapt` directory)
+
+*proTRAC* - results of piRNA cluster detection by `proTRAC`
+
+*runs* - unprocessed proTRAC output files
+
+*samples* - processed results,  by sample
+
+*processed* - processed results,  by sample
+
+*merged* - all detected clusters merged (minimal overlap `1 bp`)
+
+*temporary* - temporary files, should be empty after the run, may be deleted
+
+*plots* - diagnostic plots with graphical summary of metrics related to the section where the directory is present
+
+
+
+## Selection of Clusters of Interest
+
+
+Please note that these scripts require `perl 5.18.4` and perl module `List::MoreUtils`. These are not included in the `conda` environment. Instructions below show how to use these scripts on `rackham` Uppmax cluster.
+
+
+
+
+<!-- 
+\begin{itemize}
+  \item\texttt{src/clusterSel/sumClusters\_proTRAC.1.1.pl} collects cluster characteristics from the dataset by parsing the sample specific cluster information in \texttt{<SAMPLE>.proTRAC.tab} files; the final output file of this script links clusters in the "master file" (for example \texttt{proTRAC\_merged\_clusters.bed}) to clusters detected in individual samples; careful selection of the "master file" is recommended, more comments on this in the piRNA-seq pipeline repository;
+  \texttt{src/clusterSel/getClusters\_gff.1.0.pl} uses the output file of \item\texttt{sumClusters\_proTRAC.1.1.pl} to select clusters with specifc properties; requires sample metadata file (details in the piRNA-seq pipeline repository).
+\end{itemize}
+
+ -->
+
 
 ## References
 
